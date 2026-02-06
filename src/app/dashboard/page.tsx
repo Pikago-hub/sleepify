@@ -10,6 +10,7 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { cn } from "@/lib/utils"
+import { useAuth } from "@clerk/nextjs"
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { CheckCircle2, Circle, Loader2, XCircle } from "lucide-react"
 import { useState } from "react"
@@ -33,10 +34,19 @@ const PIPELINE_STEPS = [
   { key: "lowering_pitch", label: "Lowering voice pitch" },
 ]
 
-async function createJob(youtubeUrl: string): Promise<{ job_id: string }> {
+async function createJob({
+  youtubeUrl,
+  token,
+}: {
+  youtubeUrl: string
+  token: string | null
+}): Promise<{ job_id: string }> {
   const res = await fetch(`${API_BASE_URL}/api/jobs`, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers: {
+      "Content-Type": "application/json",
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
     body: JSON.stringify({ youtube_url: youtubeUrl }),
   })
   if (!res.ok) {
@@ -45,8 +55,15 @@ async function createJob(youtubeUrl: string): Promise<{ job_id: string }> {
   return res.json()
 }
 
-async function fetchJobStatus(jobId: string): Promise<JobStatus> {
-  const res = await fetch(`${API_BASE_URL}/api/jobs/${jobId}`)
+async function fetchJobStatus(
+  jobId: string,
+  token: string | null
+): Promise<JobStatus> {
+  const res = await fetch(`${API_BASE_URL}/api/jobs/${jobId}`, {
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  })
   if (!res.ok) {
     throw new Error(`Failed to fetch job status: ${res.status}`)
   }
@@ -119,11 +136,15 @@ function JobProgress({ job }: { job: JobStatus }) {
 }
 
 export default function DashboardPage() {
+  const { getToken } = useAuth()
   const [youtubeUrl, setYoutubeUrl] = useState("")
   const [jobId, setJobId] = useState<string | null>(null)
 
   const { mutate, isPending, isError, error } = useMutation({
-    mutationFn: createJob,
+    mutationFn: async (url: string) => {
+      const token = await getToken()
+      return createJob({ youtubeUrl: url, token })
+    },
     onSuccess: (data) => {
       setJobId(data.job_id)
     },
@@ -131,7 +152,10 @@ export default function DashboardPage() {
 
   const { data: job } = useQuery({
     queryKey: ["job", jobId],
-    queryFn: () => fetchJobStatus(jobId!),
+    queryFn: async () => {
+      const token = await getToken()
+      return fetchJobStatus(jobId!, token)
+    },
     enabled: !!jobId,
     refetchInterval: (query) => {
       const status = query.state.data?.status

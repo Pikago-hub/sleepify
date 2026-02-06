@@ -145,7 +145,7 @@ export function CTA() {
                 Paste a YouTube URL and experience peaceful audio. Free to try.
               </p>
               <a
-                href="/"
+                href="/dashboard"
                 className={cn(
                   buttonVariants({
                     size: "lg",

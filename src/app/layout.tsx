@@ -1,3 +1,5 @@
+import { ClerkProvider } from "@clerk/nextjs";
+import { dark } from "@clerk/themes";
 import { QueryProvider } from "@/components/query-provider";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { siteConfig } from "@/lib/config";
@@ -23,20 +25,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html
-      lang="en"
-      className={`dark ${GeistSans.variable} ${GeistMono.variable} ${fontSans.variable}`}
-    >
-      <body
-        className={cn(
-          "min-h-screen bg-background antialiased w-full mx-auto scroll-smooth font-sans"
-        )}
+    <ClerkProvider appearance={{ baseTheme: dark }}>
+      <html
+        lang="en"
+        className={`dark ${GeistSans.variable} ${GeistMono.variable} ${fontSans.variable}`}
       >
-        <QueryProvider>
-          {children}
-        </QueryProvider>
-        <TailwindIndicator />
-      </body>
-    </html>
+        <body
+          className={cn(
+            "min-h-screen bg-background antialiased w-full mx-auto scroll-smooth font-sans"
+          )}
+        >
+          <QueryProvider>
+            {children}
+          </QueryProvider>
+          <TailwindIndicator />
+        </body>
+      </html>
+    </ClerkProvider>
   );
 }

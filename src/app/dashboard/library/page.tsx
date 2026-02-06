@@ -11,6 +11,7 @@ import {
   Play,
   Pause,
 } from "lucide-react"
+import { useAuth } from "@clerk/nextjs"
 import { useQuery } from "@tanstack/react-query"
 
 import { Button } from "@/components/ui/button"
@@ -44,8 +45,12 @@ interface JobsResponse {
   offset: number
 }
 
-async function fetchJobs(): Promise<JobsResponse> {
-  const res = await fetch(`${API_BASE_URL}/api/jobs`)
+async function fetchJobs(token: string | null): Promise<JobsResponse> {
+  const res = await fetch(`${API_BASE_URL}/api/jobs`, {
+    headers: {
+      ...(token && { Authorization: `Bearer ${token}` }),
+    },
+  })
   if (!res.ok) {
     throw new Error(`Failed to fetch jobs: ${res.status}`)
   }
@@ -175,7 +180,8 @@ function AudioPlayer({ src }: { src: string }) {
         </div>
         <a
           href={src}
-          download
+          target="_blank"
+          rel="noopener noreferrer"
           className="flex h-7 w-7 shrink-0 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
           title="Download"
         >
@@ -187,6 +193,7 @@ function AudioPlayer({ src }: { src: string }) {
 }
 
 export default function LibraryPage() {
+  const { getToken } = useAuth()
   const {
     data,
     isLoading,
@@ -194,7 +201,10 @@ export default function LibraryPage() {
     error,
   } = useQuery({
     queryKey: ["jobs"],
-    queryFn: fetchJobs,
+    queryFn: async () => {
+      const token = await getToken()
+      return fetchJobs(token)
+    },
     refetchInterval: (query) => {
       const hasProcessing = query.state.data?.jobs?.some(
         (j) => j.status === "processing"

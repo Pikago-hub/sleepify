@@ -149,7 +149,7 @@ export const siteConfig = {
   pricing: [
     {
       name: "Free",
-      href: "#",
+      href: "/dashboard",
       price: "$0",
       period: "month",
       yearlyPrice: "$0",
@@ -165,7 +165,7 @@ export const siteConfig = {
     },
     {
       name: "Pro",
-      href: "#",
+      href: "/dashboard",
       price: "$6",
       period: "month",
       yearlyPrice: "$48",

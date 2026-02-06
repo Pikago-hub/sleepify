@@ -9,10 +9,12 @@ import {
 } from "@/components/ui/drawer";
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
+import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import { IoMenuSharp } from "react-icons/io5";
 
 export function MobileDrawer() {
+  const { isSignedIn } = useAuth();
   return (
     <Drawer>
       <DrawerTrigger>
@@ -33,13 +35,13 @@ export function MobileDrawer() {
         </DrawerHeader>
         <DrawerFooter>
           <Link
-            href="#"
+            href="/dashboard"
             className={cn(
               buttonVariants({ variant: "default" }),
               "text-white rounded-full group"
             )}
           >
-            {siteConfig.cta}
+            {isSignedIn ? "Dashboard" : siteConfig.cta}
           </Link>
         </DrawerFooter>
       </DrawerContent>

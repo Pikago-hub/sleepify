@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { siteConfig } from "@/lib/config";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { CheckIcon, ChevronRightIcon } from "lucide-react";
+import Link from "next/link";
 import { useRef } from "react";
 
 export function Pricing() {
@@ -60,12 +61,15 @@ export function Pricing() {
               ))}
             </div>
             <Button
+              asChild
               variant={"default"}
               size="sm"
               className="rounded-full text-white"
             >
-              Get Started
-              <ChevronRightIcon className="w-4 h-4 ml-1" />
+              <Link href="/dashboard">
+                Get Started
+                <ChevronRightIcon className="w-4 h-4 ml-1" />
+              </Link>
             </Button>
           </motion.div>
         ))}

@@ -6,10 +6,12 @@ import { easeInOutCubic } from "@/lib/animation";
 import { siteConfig } from "@/lib/config";
 import { cn } from "@/lib/utils";
 import { AnimatePresence, motion, useAnimation } from "framer-motion";
+import { useAuth } from "@clerk/nextjs";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
 export function Header() {
+  const { isSignedIn } = useAuth();
   const [isVisible, setIsVisible] = useState(true);
   const [addBorder, setAddBorder] = useState(false);
   const [isInitialLoad, setIsInitialLoad] = useState(true);
@@ -68,12 +70,12 @@ export function Header() {
               <Icons.logo className="w-auto" />
               <span className="font-bold text-xl">{siteConfig.name}</span>
             </Link>
-            <div className="hidden lg:block">
+            <div className="hidden lg:flex items-center gap-4">
               <Link
-                href="#"
+                href="/dashboard"
                 className="text-white text-sm font-medium"
               >
-                {siteConfig.cta}
+                {isSignedIn ? "Dashboard" : siteConfig.cta}
               </Link>
             </div>
             <div className="mt-2 cursor-pointer block lg:hidden">

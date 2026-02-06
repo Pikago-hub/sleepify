@@ -155,6 +155,7 @@ export const siteConfig = {
       yearlyPrice: "$0",
       features: [
         "3 videos per day",
+        "30 min max video duration",
         "Basic volume normalization",
         "Background music reduction",
         "Sleep timer",
@@ -171,6 +172,7 @@ export const siteConfig = {
       yearlyPrice: "$48",
       features: [
         "Unlimited videos",
+        "Unlimited video duration",
         "Advanced volume normalization",
         "Full sound effect removal",
         "Pace adjustment",

@@ -3,12 +3,74 @@
 import { Icons } from "@/components/icons";
 import { Section } from "@/components/section";
 import { Button } from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import { easeInOutCubic } from "@/lib/animation";
 import { siteConfig } from "@/lib/config";
 import { motion, useScroll, useTransform } from "framer-motion";
-import Link from "next/link";
+import { useEffect, useState } from "react";
+
+type DeviceType = "ios" | "android" | "desktop";
+
+function useDeviceType(): DeviceType {
+  const [device, setDevice] = useState<DeviceType>("desktop");
+
+  useEffect(() => {
+    const ua = navigator.userAgent;
+    if (/iPad|iPhone|iPod/.test(ua)) {
+      setDevice("ios");
+    } else if (/Android/.test(ua)) {
+      setDevice("android");
+    } else {
+      setDevice("desktop");
+    }
+  }, []);
+
+  return device;
+}
+
+const installSteps: Record<DeviceType, { title: string; steps: string[] }> = {
+  ios: {
+    title: "Install on iPhone / iPad",
+    steps: [
+      "Open this site in Safari (PWA install only works in Safari on iOS).",
+      "Tap the Share button (the square with an arrow at the bottom of the screen).",
+      "Scroll down and tap \"Add to Home Screen\".",
+      "Tap \"Add\" in the top-right corner.",
+      "Sleepify is now on your home screen — open it like any app!",
+    ],
+  },
+  android: {
+    title: "Install on Android",
+    steps: [
+      "Open this site in Chrome.",
+      "Tap the three-dot menu (⋮) in the top-right corner.",
+      "Tap \"Add to Home screen\" or \"Install app\".",
+      "Tap \"Install\" in the confirmation prompt.",
+      "Sleepify is now on your home screen — open it like any app!",
+    ],
+  },
+  desktop: {
+    title: "Install on Desktop",
+    steps: [
+      "Open this site in Chrome or Edge.",
+      "Click the install icon (⊕) in the address bar, or open the browser menu (⋮).",
+      "Click \"Install Sleepify\" or \"Install app\".",
+      "Sleepify will open in its own window — you can pin it to your taskbar or dock!",
+    ],
+  },
+};
 
 export function Hero() {
+  const deviceType = useDeviceType();
+  const { title, steps } = installSteps[deviceType];
+
   const { scrollY } = useScroll({
     offset: ["start start", "end start"],
   });
@@ -71,9 +133,29 @@ export function Hero() {
             transition={{ duration: 1, delay: 1 }}
             className="flex justify-center mb-16"
           >
-            <Button asChild size="lg" className="text-base px-8 py-6 rounded-full">
-              <Link href="/dashboard">Get Started for Free</Link>
-            </Button>
+            <Dialog>
+              <DialogTrigger asChild>
+                <Button size="lg" className="text-base px-8 py-6 rounded-full">
+                  Get Started for Free
+                </Button>
+              </DialogTrigger>
+              <DialogContent className="max-w-md">
+                <DialogHeader>
+                  <DialogTitle>{title}</DialogTitle>
+                  <DialogDescription>
+                    Sleepify is a Progressive Web App — install it directly from
+                    your browser. No app store needed.
+                  </DialogDescription>
+                </DialogHeader>
+                <ol className="list-decimal list-inside space-y-3 text-sm text-foreground/90 pt-2">
+                  {steps.map((step, i) => (
+                    <li key={i} className="leading-relaxed">
+                      {step}
+                    </li>
+                  ))}
+                </ol>
+              </DialogContent>
+            </Dialog>
           </motion.div>
         </div>
         <div className="flex flex-nowrap items-center justify-center gap-4 sm:gap-8 h-auto sm:h-[500px] select-none">

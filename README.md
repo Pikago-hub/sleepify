@@ -196,7 +196,7 @@ To become a production-ready SaaS, the following areas need to be addressed:
 
 ### Abuse Prevention & Billing
 - **Rate limiting** — Add per-user rate limiting and concurrent job caps to prevent abuse
-- **Stripe billing** — Integrate tiered usage limits with Stripe for subscription management
+- **Stripe integration** — Stripe is not yet integrated; subscription management and tiered usage billing need to be built out
 
 ### Observability
 - **Structured logging** — Replace ad-hoc logs with structured, queryable log output
@@ -207,6 +207,7 @@ To become a production-ready SaaS, the following areas need to be addressed:
 - **R2 lifecycle rules** — Auto-expire old processed files to control storage costs
 
 ### User Experience
+- **Landing page overhaul** — The current landing page is based on a template and needs design and copy fixes to match the Sleepify brand
 - **Customizable processing parameters** — Let users adjust tempo multiplier, pitch shift, and other settings to match their preferences
 - **ClearVoice integration** — Wire the existing speech enhancement function into the pipeline to filter out laughter, coughing, and other human-originated non-speech sounds
 

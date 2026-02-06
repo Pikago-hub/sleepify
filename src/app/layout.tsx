@@ -1,6 +1,7 @@
 import { ClerkProvider } from "@clerk/nextjs";
 import { dark } from "@clerk/themes";
 import { QueryProvider } from "@/components/query-provider";
+import { SwRegister } from "@/components/sw-register";
 import { TailwindIndicator } from "@/components/tailwind-indicator";
 import { siteConfig } from "@/lib/config";
 import { fontSans } from "@/lib/fonts";
@@ -12,11 +13,15 @@ import "./globals.css";
 
 export const metadata: Metadata = constructMetadata({
   title: `${siteConfig.name} | ${siteConfig.description}`,
+  icons: {
+    icon: "/icon-512x512.png",
+    apple: "/sleepify.png",
+  },
 });
 
 export const viewport: Viewport = {
   colorScheme: "dark",
-  themeColor: "black",
+  themeColor: "#232946",
 };
 
 export default function RootLayout({
@@ -38,6 +43,7 @@ export default function RootLayout({
           <QueryProvider>
             {children}
           </QueryProvider>
+          <SwRegister />
           <TailwindIndicator />
         </body>
       </html>

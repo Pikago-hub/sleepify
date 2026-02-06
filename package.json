@@ -18,6 +18,7 @@
     "@radix-ui/react-separator": "^1.1.8",
     "@radix-ui/react-slot": "^1.2.4",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@serwist/next": "^9.5.4",
     "@tailwindcss/postcss": "^4.1.11",
     "@tanstack/react-query": "^5.90.20",
     "class-variance-authority": "^0.7.1",
@@ -42,6 +43,7 @@
     "eslint": "^8",
     "eslint-config-next": "14.2.7",
     "postcss": "^8.4.40",
+    "serwist": "^9.5.4",
     "tw-animate-css": "^1.3.5",
     "typescript": "^5"
   }

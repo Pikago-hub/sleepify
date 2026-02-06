@@ -23,6 +23,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
+import { useMediaSession } from "@/hooks/use-media-session"
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL ?? ""
 
@@ -102,18 +103,12 @@ function formatTime(seconds: number) {
   return `${m}:${s.toString().padStart(2, "0")}`
 }
 
-function AudioPlayer({ src }: { src: string }) {
+function AudioPlayer({ src, title }: { src: string; title?: string }) {
   const audioRef = useRef<HTMLAudioElement>(null)
   const progressRef = useRef<HTMLDivElement>(null)
   const [isPlaying, setIsPlaying] = useState(false)
   const [currentTime, setCurrentTime] = useState(0)
   const [duration, setDuration] = useState(0)
-
-  useEffect(() => {
-    return () => {
-      audioRef.current?.pause()
-    }
-  }, [])
 
   const togglePlay = useCallback(() => {
     const audio = audioRef.current
@@ -124,6 +119,27 @@ function AudioPlayer({ src }: { src: string }) {
       audio.play()
     }
   }, [isPlaying])
+
+  const { updateMetadata, updatePositionState } = useMediaSession(
+    {
+      onPlay: () => audioRef.current?.play(),
+      onPause: () => audioRef.current?.pause(),
+      onSeekForward: () => {
+        if (audioRef.current) audioRef.current.currentTime += 10
+      },
+      onSeekBackward: () => {
+        if (audioRef.current) audioRef.current.currentTime -= 10
+      },
+    },
+    audioRef
+  )
+
+  useEffect(() => {
+    const audio = audioRef.current
+    return () => {
+      audio?.pause()
+    }
+  }, [])
 
   const handleSeek = useCallback(
     (e: React.MouseEvent<HTMLDivElement>) => {
@@ -145,10 +161,16 @@ function AudioPlayer({ src }: { src: string }) {
         ref={audioRef}
         src={src}
         preload="metadata"
-        onTimeUpdate={() => setCurrentTime(audioRef.current?.currentTime ?? 0)}
+        onTimeUpdate={() => {
+          setCurrentTime(audioRef.current?.currentTime ?? 0)
+          updatePositionState()
+        }}
         onLoadedMetadata={() => setDuration(audioRef.current?.duration ?? 0)}
         onEnded={() => setIsPlaying(false)}
-        onPlay={() => setIsPlaying(true)}
+        onPlay={() => {
+          setIsPlaying(true)
+          updateMetadata({ title: title ?? "Sleepify Audio" })
+        }}
         onPause={() => setIsPlaying(false)}
       />
       <div className="flex items-center gap-2.5">
@@ -302,7 +324,7 @@ export default function LibraryPage() {
                 <p className="text-sm text-red-400">{job.error}</p>
               )}
               {job.status === "completed" && job.download_url && (
-                <AudioPlayer src={job.download_url} />
+                <AudioPlayer src={job.download_url} title={job.title ?? undefined} />
               )}
             </CardContent>
           </Card>
